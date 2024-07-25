@@ -1,4 +1,4 @@
-﻿namespace SO78788856.Components;
+﻿namespace Blazr.Timers;
 
 public record StatusData(string Name, DateTimeOffset Timestamp);
 
