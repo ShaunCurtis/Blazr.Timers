@@ -1,0 +1,64 @@
+﻿@page "/"
+
+@using System.Threading
+@inject StatusService WebService
+@implements IDisposable
+
+<h4>Status Viewer</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Last Update</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (StatusList != null)
+        {
+            @foreach (var status in StatusList)
+            {
+                <tr>
+                    <td>@status.Name</td>
+                    <td>@status.Timestamp</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+@code
+{
+    public IEnumerable<StatusData> StatusList { get; set; } = Enumerable.Empty<StatusData>();
+
+    private TimeSpan _timeSpan = new TimeSpan(0, 0, 5);
+    private Timer? _timer { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateStatus();
+
+        // Kick off the first one off timer
+        _timer = new Timer(this.OnTimerElapsed, null, _timeSpan, Timeout.InfiniteTimeSpan);
+    }
+
+    private async void OnTimerElapsed(object? state)
+    {
+        await UpdateStatus();
+        // Creates a new one off timer once we have the current data
+        // prevents any thread and data conflicts
+        _timer = new Timer(this.OnTimerElapsed, null, _timeSpan, Timeout.InfiniteTimeSpan);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateStatus()
+    {
+        StatusList = await WebService.GetStatus();
+    }
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}
