@@ -12,7 +12,7 @@ How often do you see:
 int timePeriod = 2000;
 ```
 
-What does `2000` mean?  An educated guess suggesyts it's 2000 milliseconds, but you don't KNOW, until you see it used.
+What does `2000` mean?  An educated guess is it's 2000 milliseconds, but you can't be sure until you see it used.
 
 This is a classic case of *primitive obsession*.  It could mean anything from 2000 years to 2000 ticks.
 
@@ -26,15 +26,17 @@ There are two main ways you get a `TimeSpan`:
 
 ###  There's more that just TimeDate
 
-In general you should be using `TimeDateOffset` rather than `TimeDate` as it manages time zones.
+`TimeDate` is the most common.  But it doesn't provide timezone information.  In most instances you should use the newer `TimeDateOffset` which does provide time zone information.
 
-If you are only interested in Dates, use `DateOnly`: date equality checking is easy.
+If you are only interested in Dates, use `DateOnly`: it makes date equality checking easy.
 
 ## One Timer To Rule Them All
 
 On first impression, building and using timers appears to be a relatively expensive operation.  That's not the case.  There's only one timer *service* per AppDomain: called `TimerQueue`.  Timers are simple objects loaded into the timer list in  `TimeQueue`.
 
 All the timer implementations basically load `TimerQueueTimer` instances into the `TimeQueue` with callbacks to invoke when the timer expires.
+
+There's a short articles on timers [here on my personal Github site.](https://shauncurtis.github.io/Posts/Timers.html)
 
 ## Clean Implementation
 
